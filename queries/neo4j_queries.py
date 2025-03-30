@@ -62,27 +62,28 @@ class Neo4jQueries:
     def query_16_actor_with_highest_revenue(self):
         """
         16. Trouve l'acteur ayant joué dans des films totalisant le plus de revenus
-        
+    
         Returns:
             tuple: (nom de l'acteur, revenu total)
         """
         if not self.graph:
             return None, 0
-            
+    
         query = """
         MATCH (a:Actor)-[:A_JOUE_DANS]->(f:Film)
-        WHERE f.revenue IS NOT NULL
-        WITH a, sum(f.revenue) AS total_revenue
+        WHERE f.revenue IS NOT NULL AND f.revenue <> ""
+        WITH a, sum(toFloat(f.revenue)) AS total_revenue
         RETURN a.name AS actor_name, total_revenue
         ORDER BY total_revenue DESC
         LIMIT 1
         """
-        
+    
         result = self.graph.run(query).data()
         if result:
             return result[0]["actor_name"], result[0]["total_revenue"]
         else:
             return None, 0
+
     
     def query_17_average_votes(self):
         """
